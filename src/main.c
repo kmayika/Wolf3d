@@ -6,15 +6,11 @@
 /*   By: kmayika <kmayika@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/08/22 14:13:15 by kmayika           #+#    #+#             */
-/*   Updated: 2018/08/22 15:13:15 by kmayika          ###   ########.fr       */
+/*   Updated: 2018/08/24 00:28:38 by kmayika          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../../../minilibx/mlx.h"
-#include <math.h>
-#include <stdlib.h>
-#define mapWidth 24
-#define mapHeight 24
+#include "../includes/wolf3d.h"
 
 int worldMap[mapWidth][mapHeight]=
 {
@@ -44,107 +40,158 @@ int worldMap[mapWidth][mapHeight]=
   {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}
 };
 
-int		main(/*int ac, char **av*/)
+void	render(t_wolf *ren)
 {
-	double pos_x = 22, pos_y = 12;//x and y start positions
-	double dir_x = - 1, dir_y = 0;// initial direction vector
-	double plane_x = 0, plane_y = 0.66;//camera plane
-//	double time = 0;//time of current frame
-//	double old_time = 0; //time of old frame
-	int	x = 0;
-	int y = 0;
-
-	void *mlx;
-	void *win;
-
-	mlx = mlx_init();
-	win = mlx_new_window(mlx, 500,500, "Wolf3D");
-	while (y < 500)
+	ren->x = 0;
+	ren->y = 0;
+	while (ren->y < 500)
 	{
-		while(x < 500)
+		while(ren->x < 500)
 		{
-			double camera_x = 2 * x / 500 - 1;
-			double rayDirX = dir_x + plane_x * camera_x;
-			double rayDirY = dir_y + plane_y * camera_x;
+			ren->cam.camera_x = 2 * ren->x / 500 - 1;
+			ren->cam.ray_dir_x = ren->dir_x + ren->plane_x * ren->cam.camera_x;
+			ren->cam.ray_dir_y = ren->dir_y + ren->plane_y * ren->cam.camera_x;
 			//which box of the map we're in
-      		int mapX = (int)pos_x;
-      		int mapY = (int)pos_y;
-
-      	//length of ray from current position to next x or y-side
-      		double sideDistX;
-      		double sideDistY;
+      		ren->map_x = ren->pos_x;
+      		ren->map_y = ren->pos_y;
 
        	//length of ray from one x or y-side to next x or y-side
-      		double deltaDistX = fabs(1 / rayDirX);
-     		double deltaDistY = fabs(1 / rayDirY);
-      		double perpWallDist;
+      		ren->dist.delta_dist_x = fabs(1 / ren->cam.ray_dir_x);
+     		ren->dist.delta_dist_y = fabs(1 / ren->cam.ray_dir_y);
 
       	//what direction to step in x or y-direction (either +1 or -1)
-      		int stepX;
-      		int stepY;
-
-      		int hit = 0; //was there a wall hit?
-      		int side; //was a NS or a EW wall hit?
+      		ren->hit = 0; //was there a wall hit?
 			//calculate step and initial sideDist
-			if (rayDirX < 0)
+			if (ren->cam.ray_dir_x < 0)
      		{
-        	stepX = -1;
-        	sideDistX = (pos_x - mapX) * deltaDistX;
+        	ren->step_x = -1;
+        	ren->dist.side_dist_x = (ren->pos_x - ren->map_x) * ren->dist.delta_dist_x;
       		}
       		else
       		{
-				stepX = 1;
-        		sideDistX = (mapX + 1.0 - pos_x) * deltaDistX;
+				ren->step_x = 1;
+        		ren->dist.side_dist_x = (ren->map_x + 1.0 - ren->pos_x) * ren->dist.delta_dist_x;
       		}
-      		if (rayDirY < 0)
+      		if (ren->cam.ray_dir_y < 0)
      		{
-        		stepY = -1;
-        		sideDistY = (pos_y - mapY) * deltaDistY;
+        		ren->step_y = -1;
+        		ren->dist.side_dist_y = (ren->pos_y - ren->map_y) * ren->dist.delta_dist_y;
       		}
       		else
       		{
-        		stepY = 1;
-        		sideDistY = (mapY + 1.0 - pos_y) * deltaDistY;
+        		ren->step_y = 1;
+        		ren->dist.side_dist_y = (ren->map_y + 1.0 - ren->pos_y) * ren->dist.delta_dist_y;
       		}
 			//perform DDA
-      		while (hit == 0)
+      		while (ren->hit == 0)
       		{
         //jump to next map square, OR in x-direction, OR in y-direction
-        		if (sideDistX < sideDistY)
+        		if (ren->dist.side_dist_x < ren->dist.side_dist_y)
         		{
-          			sideDistX += deltaDistX;
-          			mapX += stepX;
-          			side = 0;
+          			ren->dist.side_dist_x += ren->dist.delta_dist_x;
+          			ren->map_x += ren->step_x;
+          			ren->side = 0;
        			}
         		else
         		{
-          			sideDistY += deltaDistY;
-          			mapY += stepY;
-          			side = 1;
+          			ren->dist.side_dist_y += ren->dist.delta_dist_y;
+          			ren->map_y += ren->step_y;
+          			ren->side = 1;
         		}
         //Check if ray has hit a wall
-        		if (worldMap[mapX][mapY] > 0)
-					hit = 1;
+        		if (worldMap[ren->map_x][ren->map_y] > 0)
+					ren->hit = 1;
       		}
 			//Calculate distance projected on camera direction (Euclidean distance will give fisheye effect!)
-      		if (side == 0)
-			  perpWallDist = (mapX - pos_x + (1 - stepX) / 2) / rayDirX;
+      		if (ren->side == 0)
+			  ren->dist.perp_wall_dist = (ren->map_x - ren->pos_x + (1 - ren->step_x) / 2) / ren->cam.ray_dir_x;
       		else
-			  perpWallDist = (mapY - pos_y + (1 - stepY) / 2) / rayDirY;
+			  ren->dist.perp_wall_dist = (ren->map_y - ren->pos_y + (1 - ren->step_y) / 2) / ren->cam.ray_dir_y;
 			//Calculate height of line to draw on screen
-      		int lineHeight = (int)(500 / perpWallDist);
+      		ren->draw.line_height = (int)(500 / ren->dist.perp_wall_dist);
 
-      //calculate lowest and highest pixel to fill in current stripe
-      		int drawStart = -lineHeight / 2 + 500 / 2;
-      		if(drawStart < 0)
-			  	drawStart = 0;
-      		int drawEnd = lineHeight / 2 + 500 / 2;
-      		if(drawEnd >= 500)
-	  			drawEnd = 500 - 1;
-			mlx_pixel_put(mlx,win,drawStart,drawEnd, 0xFFFFFF);
-			x++;
+      //calculate lowest and highest pixel to fillin current stripe
+      		ren->draw.draw_start = -ren->draw.line_height / 2 + 500 / 2;
+      		if(ren->draw.draw_start < 0)
+			  	ren->draw.draw_start = 0;
+      		ren->draw.draw_end = ren->draw.line_height / 2 + 500 / 2;
+      		if(ren->draw.draw_end >= 500)
+	  			ren->draw.draw_end = 500 - 1;
+			while (ren->draw.draw_start != ren->draw.draw_end)
+			{
+				if(worldMap[ren->map_x][ren->map_y] == 3)
+				{
+					ren->color = 0x00FF00;
+				}
+				else
+				{
+					ren->color = 0xFFFFFF;
+				}
+				mlx_pixel_put(ren->mlx,ren->win,ren->x,ren->draw.draw_start++, ren->color);
+			}
+			ren->x++;
 		}
-		y++;
+		ren->y++;
 	}
-	mlx_loop(mlx);
+}
+
+int		hooks(int keycode, t_wolf *ren)
+{
+	if (keycode == 53)
+	{
+		exit(1);
+	}
+	else if (keycode == 126)
+	{
+		ren->pos_x += ren->dir_x;
+		ren->pos_y += ren->dir_y;
+	}
+	else if (keycode == 125)
+	{
+		ren->pos_x -= ren->dir_x;
+		ren->pos_y -= ren->dir_y;
+	}
+	else if (keycode == 123)
+	{	
+		ren->old_dir_x = ren->dir_x;
+		ren->dir_x = ren->dir_x * cos (-0.1) - ren->dir_y * sin(-0.1);
+		ren->dir_y = ren->old_dir_x * sin(-0.1) + ren->dir_y * cos(-0.1);
+		ren->old_plane_x = ren->plane_x;
+		ren->plane_x = ren->plane_x * cos(-0.1) - ren->plane_x * sin(-0.1);
+		ren->plane_y = ren->old_plane_x * sin(-0.1) + ren->plane_y * cos(-0.1);	
+	}
+	else if (keycode == 124)
+	{
+		ren->old_dir_x = ren->dir_x;
+		ren->dir_x = ren->dir_x * cos (0.1) - ren->dir_y * sin(0.1);
+		ren->dir_y = ren->old_dir_x * sin(0.1) + ren->dir_y * cos(0.1);
+		ren->old_plane_x = ren->plane_x;
+		ren->plane_x = ren->plane_x * cos(0.1) - ren->plane_x * sin(0.1);
+		ren->plane_y = ren->old_plane_x * sin(0.1) + ren->plane_y * cos(0.1);
+	}
+	mlx_clear_window(ren->mlx, ren->win);
+	render(ren);
+	return (0);
+}
+
+int		main(/*int ac, char **av*/)
+{
+	t_wolf *ren;
+
+	ren = (t_wolf *)malloc(sizeof(t_wolf));
+	ren->pos_x = 22;
+	ren->pos_y = 12;//x and y start positions
+	ren->dir_x = - 1;
+	ren->dir_y = 0;// initial direction vector
+	ren->plane_x = 0;
+	ren->plane_y = 0.66;//camera plane
+//	double time = 0;//time of current frame
+//	double old_time = 0; //time of old frame
+	ren->x = 0;
+	ren->y = 0;
+	ren->mlx = mlx_init();
+	ren->win = mlx_new_window(ren->mlx, 500,500, "Wolf3D");
+	render(ren);
+	mlx_key_hook(ren->win, hooks, ren);
+	mlx_loop(ren->mlx);
 }
