@@ -52,17 +52,18 @@ int		main(/*int ac, char **av*/)
 //	double time = 0;//time of current frame
 //	double old_time = 0; //time of old frame
 	int	x = 0;
+	int y = 0;
 
 	void *mlx;
 	void *win;
 
 	mlx = mlx_init();
 	win = mlx_new_window(mlx, 500,500, "Wolf3D");
-	while (1)
+	while (y < 500)
 	{
-		while(x < mapWidth)
+		while(x < 500)
 		{
-			double camera_x = 2 * x / mapWidth - 1;
+			double camera_x = 2 * x / 500 - 1;
 			double rayDirX = dir_x + plane_x * camera_x;
 			double rayDirY = dir_y + plane_y * camera_x;
 			//which box of the map we're in
@@ -131,20 +132,19 @@ int		main(/*int ac, char **av*/)
       		else
 			  perpWallDist = (mapY - pos_y + (1 - stepY) / 2) / rayDirY;
 			//Calculate height of line to draw on screen
-      		int lineHeight = (int)(mapHeight / perpWallDist);
+      		int lineHeight = (int)(500 / perpWallDist);
 
       //calculate lowest and highest pixel to fill in current stripe
-      		int drawStart = -lineHeight / 2 + mapHeight / 2;
+      		int drawStart = -lineHeight / 2 + 500 / 2;
       		if(drawStart < 0)
 			  	drawStart = 0;
-      		int drawEnd = lineHeight / 2 + mapHeight / 2;
-      		if(drawEnd >= mapHeight)
-	  			drawEnd = mapHeight - 1;
+      		int drawEnd = lineHeight / 2 + 500 / 2;
+      		if(drawEnd >= 500)
+	  			drawEnd = 500 - 1;
 			mlx_pixel_put(mlx,win,drawStart,drawEnd, 0xFFFFFF);
-
 			x++;
-
 		}
+		y++;
 	}
 	mlx_loop(mlx);
 }
