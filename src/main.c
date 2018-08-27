@@ -148,14 +148,15 @@ int		hooks(int keycode, t_wolf *ren)
 	{
 		if (worldMap[(int)(ren->pos_y)][(int)(ren->pos_x + ren->dir_x)] == 0)
 			ren->pos_x += ren->dir_x;
-		if (worldMap[(int)(ren->pos_y + ren->dir_y)]
-				[(int)(ren->pos_x)] == 0)
+		if (worldMap[(int)(ren->pos_y + ren->dir_y)][(int)(ren->pos_x)] == 0)
 			ren->pos_y += ren->dir_y;
 	}
 	else if (keycode == 125)
 	{
-		ren->pos_x -= ren->dir_x;
-		ren->pos_y -= ren->dir_y;
+		if (worldMap[(int)(ren->pos_y)][(int)(ren->pos_x + ren->dir_x)] == 0)
+			ren->pos_x -= ren->dir_x;
+		if (worldMap[(int)(ren->pos_y + ren->dir_y)][(int)(ren->pos_x)] == 0)	
+			ren->pos_y -= ren->dir_y;
 	}
 	else if (keycode == 124)
 	{
