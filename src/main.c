@@ -6,7 +6,7 @@
 /*   By: kmayika <kmayika@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/08/22 14:13:15 by kmayika           #+#    #+#             */
-/*   Updated: 2018/08/24 00:28:38 by kmayika          ###   ########.fr       */
+/*   Updated: 2018/08/27 14:42:10 by kmayika          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,17 +43,14 @@ int worldMap[mapWidth][mapHeight]=
 void	render(t_wolf *ren)
 {
 	ren->x = 0;
-	ren->y = 0;
-	while (ren->y < 500)
-	{
-		while(ren->x < 500)
+		while(ren->x < TILE_WIDTH)
 		{
-			ren->cam.camera_x = 2 * ren->x / 500 - 1;
+			ren->cam.camera_x = 2 * ren->x / (double)TILE_WIDTH - 1;
 			ren->cam.ray_dir_x = ren->dir_x + ren->plane_x * ren->cam.camera_x;
 			ren->cam.ray_dir_y = ren->dir_y + ren->plane_y * ren->cam.camera_x;
 			//which box of the map we're in
-      		ren->map_x = ren->pos_x;
-      		ren->map_y = ren->pos_y;
+      		ren->map_x = (int)ren->pos_x;
+      		ren->map_y = (int)ren->pos_y;
 
        	//length of ray from one x or y-side to next x or y-side
       		ren->dist.delta_dist_x = fabs(1 / ren->cam.ray_dir_x);
@@ -99,7 +96,7 @@ void	render(t_wolf *ren)
           			ren->side = 1;
         		}
         //Check if ray has hit a wall
-        		if (worldMap[ren->map_x][ren->map_y] > 0)
+        		if (worldMap[ren->map_y][ren->map_x] > 0)
 					ren->hit = 1;
       		}
 			//Calculate distance projected on camera direction (Euclidean distance will give fisheye effect!)
@@ -108,20 +105,24 @@ void	render(t_wolf *ren)
       		else
 			  ren->dist.perp_wall_dist = (ren->map_y - ren->pos_y + (1 - ren->step_y) / 2) / ren->cam.ray_dir_y;
 			//Calculate height of line to draw on screen
-      		ren->draw.line_height = (int)(500 / ren->dist.perp_wall_dist);
+      		ren->draw.line_height = (int)(TILE_HEIGHT / ren->dist.perp_wall_dist);
 
       //calculate lowest and highest pixel to fillin current stripe
-      		ren->draw.draw_start = -ren->draw.line_height / 2 + 500 / 2;
+      		ren->draw.draw_start = -ren->draw.line_height / 2 + TILE_HEIGHT / 2;
       		if(ren->draw.draw_start < 0)
 			  	ren->draw.draw_start = 0;
-      		ren->draw.draw_end = ren->draw.line_height / 2 + 500 / 2;
-      		if(ren->draw.draw_end >= 500)
-	  			ren->draw.draw_end = 500 - 1;
+      		ren->draw.draw_end = ren->draw.line_height / 2 + TILE_HEIGHT / 2;
+      		if(ren->draw.draw_end >= TILE_HEIGHT)
+	  			ren->draw.draw_end = TILE_HEIGHT - 1;
 			while (ren->draw.draw_start != ren->draw.draw_end)
 			{
 				if(worldMap[ren->map_x][ren->map_y] == 3)
 				{
 					ren->color = 0x00FF00;
+				}
+				else if (worldMap[ren->map_x][ren->map_y] == 4)
+				{
+					ren->color = 0xff00ff;
 				}
 				else
 				{
@@ -131,43 +132,45 @@ void	render(t_wolf *ren)
 			}
 			ren->x++;
 		}
-		ren->y++;
-	}
 }
 
 int		hooks(int keycode, t_wolf *ren)
 {
+	double rot_speed = 0.1;
 	if (keycode == 53)
 	{
 		exit(1);
 	}
 	else if (keycode == 126)
 	{
-		ren->pos_x += ren->dir_x;
-		ren->pos_y += ren->dir_y;
+		if (worldMap[(int)(ren->pos_y)][(int)(ren->pos_x + ren->dir_x)] == 0)
+			ren->pos_x += ren->dir_x;
+		if (worldMap[(int)(ren->pos_y + ren->dir_y)]
+				[(int)(ren->pos_x)] == 0)
+			ren->pos_y += ren->dir_y;
 	}
 	else if (keycode == 125)
 	{
 		ren->pos_x -= ren->dir_x;
 		ren->pos_y -= ren->dir_y;
 	}
-	else if (keycode == 123)
-	{	
-		ren->old_dir_x = ren->dir_x;
-		ren->dir_x = ren->dir_x * cos (-0.1) - ren->dir_y * sin(-0.1);
-		ren->dir_y = ren->old_dir_x * sin(-0.1) + ren->dir_y * cos(-0.1);
-		ren->old_plane_x = ren->plane_x;
-		ren->plane_x = ren->plane_x * cos(-0.1) - ren->plane_x * sin(-0.1);
-		ren->plane_y = ren->old_plane_x * sin(-0.1) + ren->plane_y * cos(-0.1);	
-	}
 	else if (keycode == 124)
 	{
 		ren->old_dir_x = ren->dir_x;
-		ren->dir_x = ren->dir_x * cos (0.1) - ren->dir_y * sin(0.1);
-		ren->dir_y = ren->old_dir_x * sin(0.1) + ren->dir_y * cos(0.1);
+		ren->dir_x = ren->dir_x * cos(-rot_speed) - ren->dir_y * sin(-rot_speed);
+		ren->dir_y = ren->old_dir_x * sin(-rot_speed) + ren->dir_y * cos(-rot_speed);
 		ren->old_plane_x = ren->plane_x;
-		ren->plane_x = ren->plane_x * cos(0.1) - ren->plane_x * sin(0.1);
-		ren->plane_y = ren->old_plane_x * sin(0.1) + ren->plane_y * cos(0.1);
+		ren->plane_x = ren->plane_x * cos(-rot_speed) - ren->plane_y * sin(-rot_speed);
+		ren->plane_y = ren->old_plane_x * sin(-rot_speed) + ren->plane_y * cos(-rot_speed);	
+	}
+	else if (keycode == 123)
+	{
+		ren->old_dir_x = ren->dir_x;
+		ren->dir_x = ren->dir_x * cos(rot_speed) - ren->dir_y * sin(rot_speed);
+		ren->dir_y = ren->old_dir_x * sin(rot_speed) + ren->dir_y * cos(rot_speed);
+		ren->old_plane_x = ren->plane_x;
+		ren->plane_x = ren->plane_x * cos(rot_speed) - ren->plane_y * sin(rot_speed);
+		ren->plane_y = ren->old_plane_x * sin(rot_speed) + ren->plane_y * cos(rot_speed);
 	}
 	mlx_clear_window(ren->mlx, ren->win);
 	render(ren);
@@ -179,9 +182,9 @@ int		main(/*int ac, char **av*/)
 	t_wolf *ren;
 
 	ren = (t_wolf *)malloc(sizeof(t_wolf));
-	ren->pos_x = 22;
-	ren->pos_y = 12;//x and y start positions
-	ren->dir_x = - 1;
+	ren->pos_x = 2;
+	ren->pos_y = 2;//x and y start positions
+	ren->dir_x = -1;
 	ren->dir_y = 0;// initial direction vector
 	ren->plane_x = 0;
 	ren->plane_y = 0.66;//camera plane
@@ -190,8 +193,9 @@ int		main(/*int ac, char **av*/)
 	ren->x = 0;
 	ren->y = 0;
 	ren->mlx = mlx_init();
-	ren->win = mlx_new_window(ren->mlx, 500,500, "Wolf3D");
+	ren->win = mlx_new_window(ren->mlx, TILE_WIDTH,TILE_HEIGHT, "Wolf3D");
 	render(ren);
-	mlx_key_hook(ren->win, hooks, ren);
+	mlx_hook(ren->win, 2, 0, hooks, ren);
+//	mlx_key_hook(ren->win, hooks, ren);
 	mlx_loop(ren->mlx);
 }

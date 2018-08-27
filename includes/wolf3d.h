@@ -6,7 +6,7 @@
 /*   By: kmayika <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/08/23 21:50:23 by kmayika           #+#    #+#             */
-/*   Updated: 2018/08/24 00:28:42 by kmayika          ###   ########.fr       */
+/*   Updated: 2018/08/27 14:43:21 by kmayika          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,8 @@
 #include <stdlib.h>
 #define mapWidth 24
 #define mapHeight 24
+#define TILE_WIDTH 1000
+#define TILE_HEIGHT 1000
 
 typedef struct	s_draw
 {
@@ -67,6 +69,7 @@ typedef	struct s_wolf
 	struct	s_cam	cam;
 	struct	s_dist	dist;
 	struct	s_draw	draw;
+	
 
 }				t_wolf;
 
