@@ -6,201 +6,58 @@
 /*   By: kmayika <kmayika@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/08/22 14:13:15 by kmayika           #+#    #+#             */
-/*   Updated: 2018/08/27 15:45:46 by kmayika          ###   ########.fr       */
+/*   Updated: 2018/08/30 14:33:02 by kmayika          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/wolf3d.h"
 
-int worldMap[mapWidth][mapHeight]=
+void	wall_hit(t_wolf *wolf_mlx)
 {
-  {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
-  {1,0,0,0,0,0,0,0,0,0,0,0,0,3,0,0,0,0,0,0,0,0,0,1},
-  {1,0,0,0,0,0,0,0,0,0,0,0,0,3,0,0,0,0,0,0,0,0,0,1},
-  {1,3,3,3,3,3,3,3,3,3,3,0,0,3,0,0,0,0,0,0,0,0,0,1},
-  {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-  {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-  {1,0,0,0,0,0,0,0,0,0,0,0,0,3,0,0,0,0,0,0,0,0,0,1},
-  {1,0,0,0,0,0,0,0,0,0,0,0,0,3,3,0,0,3,3,0,3,0,3,1},
-  {1,0,0,0,0,0,0,0,0,0,0,0,0,3,0,0,0,3,0,0,3,0,0,1},
-  {1,0,0,0,0,0,0,0,0,0,0,0,0,3,0,0,0,3,0,0,3,0,0,1},
-  {1,0,0,0,0,0,0,0,0,0,0,0,0,3,3,3,3,3,3,3,3,3,3,1},
-  {1,0,0,0,0,0,0,0,0,0,0,0,0,3,0,0,0,0,0,0,0,0,0,1},
-  {1,0,0,0,0,0,0,0,0,0,0,0,0,3,0,0,0,0,0,0,0,0,0,1},
-  {1,0,0,0,0,0,0,0,0,0,0,0,0,3,0,0,0,0,0,0,0,0,0,1},
-  {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-  {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-  {1,0,0,0,0,0,0,0,0,0,0,0,0,3,0,0,0,0,0,0,0,0,0,1},
-  {1,0,0,0,0,0,0,0,0,0,0,0,0,3,0,0,0,0,0,0,0,0,0,1},
-  {1,0,0,0,0,0,0,0,0,0,0,0,0,3,0,0,0,0,0,0,0,0,0,1},
-  {1,4,4,0,4,4,4,4,3,3,3,3,3,3,0,0,0,0,0,0,0,0,0,1},
-  {1,0,0,0,0,0,0,4,0,0,0,0,0,3,0,0,0,0,0,0,0,0,0,1},
-  {1,0,0,0,0,0,0,4,0,0,0,0,0,3,0,0,0,0,0,0,0,0,0,1},
-  {1,0,0,0,0,0,0,4,0,0,0,0,0,3,0,0,0,0,0,0,0,0,0,1},
-  {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}
-};
-
-void	render(t_wolf *ren)
-{
-	ren->x = 0;
-		while(ren->x < TILE_WIDTH)
+	while (wolf_mlx->hit == 0)
+	{
+		if (wolf_mlx->dist.side_dist_x < wolf_mlx->dist.side_dist_y)
 		{
-			ren->cam.camera_x = 2 * ren->x / (double)TILE_WIDTH - 1;
-			ren->cam.ray_dir_x = ren->dir_x + ren->plane_x * ren->cam.camera_x;
-			ren->cam.ray_dir_y = ren->dir_y + ren->plane_y * ren->cam.camera_x;
-			//which box of the map we're in
-      		ren->map_x = (int)ren->pos_x;
-      		ren->map_y = (int)ren->pos_y;
-
-       	//length of ray from one x or y-side to next x or y-side
-      		ren->dist.delta_dist_x = fabs(1 / ren->cam.ray_dir_x);
-     		ren->dist.delta_dist_y = fabs(1 / ren->cam.ray_dir_y);
-
-      	//what direction to step in x or y-direction (either +1 or -1)
-      		ren->hit = 0; //was there a wall hit?
-			//calculate step and initial sideDist
-			if (ren->cam.ray_dir_x < 0)
-     		{
-        	ren->step_x = -1;
-        	ren->dist.side_dist_x = (ren->pos_x - ren->map_x) * ren->dist.delta_dist_x;
-      		}
-      		else
-      		{
-				ren->step_x = 1;
-        		ren->dist.side_dist_x = (ren->map_x + 1.0 - ren->pos_x) * ren->dist.delta_dist_x;
-      		}
-      		if (ren->cam.ray_dir_y < 0)
-     		{
-        		ren->step_y = -1;
-        		ren->dist.side_dist_y = (ren->pos_y - ren->map_y) * ren->dist.delta_dist_y;
-      		}
-      		else
-      		{
-        		ren->step_y = 1;
-        		ren->dist.side_dist_y = (ren->map_y + 1.0 - ren->pos_y) * ren->dist.delta_dist_y;
-      		}
-			//perform DDA
-      		while (ren->hit == 0)
-      		{
-        //jump to next map square, OR in x-direction, OR in y-direction
-        		if (ren->dist.side_dist_x < ren->dist.side_dist_y)
-        		{
-          			ren->dist.side_dist_x += ren->dist.delta_dist_x;
-          			ren->map_x += ren->step_x;
-          			ren->side = 0;
-       			}
-        		else
-        		{
-          			ren->dist.side_dist_y += ren->dist.delta_dist_y;
-          			ren->map_y += ren->step_y;
-          			ren->side = 1;
-        		}
-        //Check if ray has hit a wall
-        		if (worldMap[ren->map_y][ren->map_x] > 0)
-					ren->hit = 1;
-      		}
-			//Calculate distance projected on camera direction (Euclidean distance will give fisheye effect!)
-      		if (ren->side == 0)
-			  ren->dist.perp_wall_dist = (ren->map_x - ren->pos_x + (1 - ren->step_x) / 2) / ren->cam.ray_dir_x;
-      		else
-			  ren->dist.perp_wall_dist = (ren->map_y - ren->pos_y + (1 - ren->step_y) / 2) / ren->cam.ray_dir_y;
-			//Calculate height of line to draw on screen
-      		ren->draw.line_height = (int)(TILE_HEIGHT / ren->dist.perp_wall_dist);
-
-      //calculate lowest and highest pixel to fillin current stripe
-      		ren->draw.draw_start = -ren->draw.line_height / 2 + TILE_HEIGHT / 2;
-      		if(ren->draw.draw_start < 0)
-			  	ren->draw.draw_start = 0;
-      		ren->draw.draw_end = ren->draw.line_height / 2 + TILE_HEIGHT / 2;
-      		if(ren->draw.draw_end >= TILE_HEIGHT)
-	  			ren->draw.draw_end = TILE_HEIGHT - 1;
-			while (ren->draw.draw_start != ren->draw.draw_end)
-			{
-				if(worldMap[ren->map_x][ren->map_y] == 3)
-				{
-					ren->color = 0x00FF00;
-				}
-				else if (worldMap[ren->map_x][ren->map_y] == 4)
-				{
-					ren->color = 0xff00ff;
-				}
-				else
-				{
-					ren->color = 0xFFFFFF;
-				}
-				mlx_pixel_put(ren->mlx,ren->win,ren->x,ren->draw.draw_start++, ren->color);
-			}
-			ren->x++;
+			wolf_mlx->dist.side_dist_x += wolf_mlx->dist.delta_dist_x;
+			wolf_mlx->map_x += wolf_mlx->step_x;
+			wolf_mlx->side = 0;
 		}
+		else
+		{
+			wolf_mlx->dist.side_dist_y += wolf_mlx->dist.delta_dist_y;
+			wolf_mlx->map_y += wolf_mlx->step_y;
+			wolf_mlx->side = 1;
+		}
+		if (wolf_mlx->map[wolf_mlx->map_y][wolf_mlx->map_x] > 0)
+			wolf_mlx->hit = 1;
+	}
 }
 
-int		exit_prog()
+int		main(int ac, char **av)
 {
-	exit(0);
-}
+	t_wolf *wolf_mlx;
 
-int		hooks(int keycode, t_wolf *ren)
-{
-	double rot_speed = 0.1;
-	if (keycode == 53)
-		exit_prog();
-	else if (keycode == 126)
+	wolf_mlx = (t_wolf *)malloc(sizeof(t_wolf));
+	if (ac == 2)
 	{
-		if (worldMap[(int)(ren->pos_y)][(int)(ren->pos_x + ren->dir_x)] == 0)
-			ren->pos_x += ren->dir_x;
-		if (worldMap[(int)(ren->pos_y + ren->dir_y)][(int)(ren->pos_x)] == 0)
-			ren->pos_y += ren->dir_y;
+		wolf_mlx->pos_x = 2;
+		wolf_mlx->pos_y = 2;
+		wolf_mlx->dir_x = 1;
+		wolf_mlx->dir_y = 0;
+		wolf_mlx->plane_x = 0;
+		wolf_mlx->plane_y = 0.66;
+		wolf_mlx->x = 0;
+		wolf_mlx->y = 0;
+		wolf_mlx->image_height = TILE_HEIGHT;
+		wolf_mlx->image_width = TILE_WIDTH;
+		wolf_mlx->mlx = mlx_init();
+		wolf_mlx->win = mlx_new_window(wolf_mlx->mlx, TILE_WIDTH,
+		TILE_HEIGHT, "Wolf3D");
+		get_map(wolf_mlx, av[1]);
+		render(wolf_mlx);
+		mlx_hook(wolf_mlx->win, 2, 0, hooks, wolf_mlx);
+		mlx_hook(wolf_mlx->win, 17, 0, exit_prog, 0);
+		mlx_loop(wolf_mlx->mlx);
 	}
-	else if (keycode == 125)
-	{
-		if (worldMap[(int)(ren->pos_y)][(int)(ren->pos_x + ren->dir_x)] == 0)
-			ren->pos_x -= ren->dir_x;
-		if (worldMap[(int)(ren->pos_y + ren->dir_y)][(int)(ren->pos_x)] == 0)	
-			ren->pos_y -= ren->dir_y;
-	}
-	else if (keycode == 124)
-	{
-		ren->old_dir_x = ren->dir_x;
-		ren->dir_x = ren->dir_x * cos(-rot_speed) - ren->dir_y * sin(-rot_speed);
-		ren->dir_y = ren->old_dir_x * sin(-rot_speed) + ren->dir_y * cos(-rot_speed);
-		ren->old_plane_x = ren->plane_x;
-		ren->plane_x = ren->plane_x * cos(-rot_speed) - ren->plane_y * sin(-rot_speed);
-		ren->plane_y = ren->old_plane_x * sin(-rot_speed) + ren->plane_y * cos(-rot_speed);	
-	}
-	else if (keycode == 123)
-	{
-		ren->old_dir_x = ren->dir_x;
-		ren->dir_x = ren->dir_x * cos(rot_speed) - ren->dir_y * sin(rot_speed);
-		ren->dir_y = ren->old_dir_x * sin(rot_speed) + ren->dir_y * cos(rot_speed);
-		ren->old_plane_x = ren->plane_x;
-		ren->plane_x = ren->plane_x * cos(rot_speed) - ren->plane_y * sin(rot_speed);
-		ren->plane_y = ren->old_plane_x * sin(rot_speed) + ren->plane_y * cos(rot_speed);
-	}
-	mlx_clear_window(ren->mlx, ren->win);
-	render(ren);
 	return (0);
-}
-
-int		main(/*int ac, char **av*/)
-{
-	t_wolf *ren;
-
-	ren = (t_wolf *)malloc(sizeof(t_wolf));
-	ren->pos_x = 2;
-	ren->pos_y = 2;//x and y start positions
-	ren->dir_x = -1;
-	ren->dir_y = 0;// initial direction vector
-	ren->plane_x = 0;
-	ren->plane_y = 0.66;//camera plane
-//	double time = 0;//time of current frame
-//	double old_time = 0; //time of old frame
-	ren->x = 0;
-	ren->y = 0;
-	ren->mlx = mlx_init();
-	ren->win = mlx_new_window(ren->mlx, TILE_WIDTH,TILE_HEIGHT, "Wolf3D");
-	render(ren);
-	mlx_hook(ren->win, 2, 0, hooks, ren);
-	mlx_hook(ren->win, 17, 0, exit_prog, 0);
-//	mlx_key_hook(ren->win, hooks, ren);
-	mlx_loop(ren->mlx);
 }
