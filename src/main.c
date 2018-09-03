@@ -6,7 +6,7 @@
 /*   By: kmayika <kmayika@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/08/22 14:13:15 by kmayika           #+#    #+#             */
-/*   Updated: 2018/08/30 14:33:02 by kmayika          ###   ########.fr       */
+/*   Updated: 2018/09/03 14:03:55 by kmayika          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,29 @@ void	wall_hit(t_wolf *wolf_mlx)
 		}
 		if (wolf_mlx->map[wolf_mlx->map_y][wolf_mlx->map_x] > 0)
 			wolf_mlx->hit = 1;
+	}
+	put_floor(wolf_mlx, wolf_mlx->x);
+}
+
+void	put_floor(t_wolf *wolf_mlx, int x)
+{
+	int		m;
+	int		n;
+	int		k;
+
+	m = wolf_mlx->draw.draw_start * TILE_WIDTH + x;
+	n = wolf_mlx->draw.draw_end * TILE_WIDTH + x;
+	k = x;
+	while (k <= m)
+	{
+		wolf_mlx->image_data[k] = 0x0CCFFFF;
+		k += TILE_WIDTH;
+	}
+	k = (TILE_HEIGHT * TILE_WIDTH + x) - TILE_WIDTH;
+	while (k >= n)
+	{
+		wolf_mlx->image_data[k] = 0x0808080;
+		k -= TILE_WIDTH;
 	}
 }
 

@@ -6,7 +6,7 @@
 /*   By: kmayika <kmayika@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/08/23 21:50:23 by kmayika           #+#    #+#             */
-/*   Updated: 2018/08/30 14:41:10 by kmayika          ###   ########.fr       */
+/*   Updated: 2018/09/03 11:41:07 by kmayika          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,13 +14,12 @@
 # define WOLF3D_H
 # include <mlx.h>
 
-//#include "../../../../minilibx/mlx.h"
 # include <math.h>
 # include <stdlib.h>
 # include <fcntl.h>
 # include "../libft/libft.h"
 # define TILE_WIDTH 1000
-# define TILE_HEIGHT 1000
+# define TILE_HEIGHT 750
 
 typedef struct		s_draw
 {
@@ -95,4 +94,5 @@ void				get_dir(t_wolf *wolf_mlx);
 void				color(t_wolf *wolf_mlx);
 void				get_map(t_wolf *mlx, char *str);
 void				ft_split(char *str, t_wolf *mlx, int y);
+void				put_floor(t_wolf *wolf_mlx, int x);
 #endif
