@@ -25,9 +25,9 @@ void	mv_fwrd(t_wolf *wolf_mlx)
 void	mv_bkwd(t_wolf *wolf_mlx)
 {
 	if (wolf_mlx->map[(int)(wolf_mlx->pos_y)]
-	[(int)(wolf_mlx->pos_x + wolf_mlx->dir_x)] == 0)
+	[(int)(wolf_mlx->pos_x - wolf_mlx->dir_x)] == 0)
 		wolf_mlx->pos_x -= wolf_mlx->dir_x;
-	if (wolf_mlx->map[(int)(wolf_mlx->pos_y + wolf_mlx->dir_y)]
+	if (wolf_mlx->map[(int)(wolf_mlx->pos_y - wolf_mlx->dir_y)]
 	[(int)(wolf_mlx->pos_x)] == 0)
 		wolf_mlx->pos_y -= wolf_mlx->dir_y;
 }

@@ -12,8 +12,8 @@
 
 #ifndef WOLF3D_H
 # define WOLF3D_H
-# include <mlx.h>
-
+//# include <mlx.h>
+#include "/Users/kwezimayikana/Desktop/minilibx/mlx.h"
 # include <math.h>
 # include <stdlib.h>
 # include <fcntl.h>
@@ -79,6 +79,7 @@ typedef	struct		s_wolf
 	struct s_cam	cam;
 	struct s_dist	dist;
 	struct s_draw	draw;
+	char			*map_data;
 }					t_wolf;
 
 int					exit_prog(void);
@@ -95,4 +96,6 @@ void				color(t_wolf *wolf_mlx);
 void				get_map(t_wolf *mlx, char *str);
 void				ft_split(char *str, t_wolf *mlx, int y);
 void				put_floor(t_wolf *wolf_mlx, int x);
+void				put_menu(t_wolf *wolf_mlx);
+void				error_checking(t_wolf *wolf_mlx);
 #endif

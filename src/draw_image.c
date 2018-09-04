@@ -66,4 +66,5 @@ void	render(t_wolf *wolf_mlx)
 	mlx_put_image_to_window(wolf_mlx->mlx, wolf_mlx->win,
 	wolf_mlx->image, 0, 0);
 	mlx_destroy_image(wolf_mlx->mlx, (char *)wolf_mlx->image);
+	put_menu(wolf_mlx);
 }
