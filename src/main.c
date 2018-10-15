@@ -6,7 +6,7 @@
 /*   By: kmayika <kmayika@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/08/22 14:13:15 by kmayika           #+#    #+#             */
-/*   Updated: 2018/09/03 14:03:55 by kmayika          ###   ########.fr       */
+/*   Updated: 2018/09/11 11:38:19 by kmayika          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,7 @@ void	wall_hit(t_wolf *wolf_mlx)
 			wolf_mlx->hit = 1;
 	}
 	put_floor(wolf_mlx, wolf_mlx->x);
+	draw_line(wolf_mlx);
 }
 
 void	put_floor(t_wolf *wolf_mlx, int x)
@@ -58,33 +59,47 @@ void	put_floor(t_wolf *wolf_mlx, int x)
 
 void	put_menu(t_wolf *wolf_mlx)
 {
-	mlx_string_put(wolf_mlx->mlx, wolf_mlx->win, 10, 10,0x000000, "CONTROLS");
-	mlx_string_put(wolf_mlx->mlx, wolf_mlx->win, 10, 25,0x000000, "MOVE FWD  : UP ARROW");
-	mlx_string_put(wolf_mlx->mlx, wolf_mlx->win, 10, 40,0x000000, "MOVE BKWD : DOWN ARROW");
-	mlx_string_put(wolf_mlx->mlx, wolf_mlx->win, 10, 55,0x000000, "MOVE RGT  : RIGHT ARROW");
-	mlx_string_put(wolf_mlx->mlx, wolf_mlx->win, 10, 70,0x000000, "MOVE LFT  : LEFT ARROW");
-	mlx_string_put(wolf_mlx->mlx, wolf_mlx->win, 10, 85,0x000000, "CLOSE     : ESC");
-
+	mlx_string_put(wolf_mlx->mlx, wolf_mlx->win,
+	10, 10, 0x000000, "CONTROLS");
+	mlx_string_put(wolf_mlx->mlx, wolf_mlx->win,
+	10, 25, 0x000000, "MOVE FWD  : UP ARROW");
+	mlx_string_put(wolf_mlx->mlx, wolf_mlx->win,
+	10, 40, 0x000000, "MOVE BKWD : DOWN ARROW");
+	mlx_string_put(wolf_mlx->mlx, wolf_mlx->win,
+	10, 55, 0x000000, "MOVE RGT  : RIGHT ARROW");
+	mlx_string_put(wolf_mlx->mlx, wolf_mlx->win,
+	10, 70, 0x000000, "MOVE LFT  : LEFT ARROW");
+	mlx_string_put(wolf_mlx->mlx, wolf_mlx->win,
+	10, 85, 0x000000, "CLOSE     : ESC");
 }
 
 void	error_checking(t_wolf *wolf_mlx)
 {
-	if (ft_strcmp(wolf_mlx->map_data, "wolf_maps/map_1.wolf") == 0)
+	if (ft_strcmp(wolf_mlx->map_data, "wolf_maps/map_1.wolf") == 0 ||
+	ft_strcmp(wolf_mlx->map_data, "wolf_maps/level2.wolf") == 0)
+	{
+		wolf_mlx->mlx = mlx_init();
+		wolf_mlx->win = mlx_new_window(wolf_mlx->mlx, TILE_WIDTH,
+		TILE_HEIGHT, "Wolf3D");
+		get_map(wolf_mlx, wolf_mlx->map_data);
+		if (wolf_mlx->map[(int)wolf_mlx->pos_y][(int)(wolf_mlx->pos_x)] > 0 ||
+		wolf_mlx->map[(int)wolf_mlx->pos_y - 1][(int)(wolf_mlx->pos_x)] > 0 ||
+		wolf_mlx->map[(int)wolf_mlx->pos_y][(int)(wolf_mlx->pos_x - 1)] > 0)
 		{
-			wolf_mlx->mlx = mlx_init();
-			wolf_mlx->win = mlx_new_window(wolf_mlx->mlx, TILE_WIDTH,
-			TILE_HEIGHT, "Wolf3D");
-			get_map(wolf_mlx, wolf_mlx->map_data);
-			render(wolf_mlx);
-			mlx_hook(wolf_mlx->win, 2, 0, hooks, wolf_mlx);
-			mlx_hook(wolf_mlx->win, 17, 0, exit_prog, 0);
-			mlx_loop(wolf_mlx->mlx);
+			ft_putstr("\x1b[31m" "ERROR : Invalid starting position in map\n");
+			exit(1);
 		}
-		else
-		{
-			write (1, "Invalid File", 13);
-			exit (1);
-		}
+		map_border_err(wolf_mlx);
+		render(wolf_mlx);
+		mlx_hook(wolf_mlx->win, 2, 0, hooks, wolf_mlx);
+		mlx_hook(wolf_mlx->win, 17, 0, exit_prog, 0);
+		mlx_loop(wolf_mlx->mlx);
+	}
+	else
+	{
+		ft_putstr("\x1b[31m" "ERROR : Map not compatible\n");
+		exit(1);
+	}
 }
 
 int		main(int ac, char **av)
@@ -94,19 +109,18 @@ int		main(int ac, char **av)
 	wolf_mlx = (t_wolf *)malloc(sizeof(t_wolf));
 	if (ac == 2)
 	{
-		wolf_mlx->pos_x = 2;
-		wolf_mlx->pos_y = 2;
+		wolf_mlx->pos_x = 2.1;
+		wolf_mlx->pos_y = 2.1;
 		wolf_mlx->dir_x = 1;
 		wolf_mlx->dir_y = 0;
 		wolf_mlx->plane_x = 0;
-		wolf_mlx->plane_y = 0.66;
+		wolf_mlx->plane_y = 0.60;
 		wolf_mlx->x = 0;
-		wolf_mlx->y = 0;
 		wolf_mlx->image_height = TILE_HEIGHT;
 		wolf_mlx->image_width = TILE_WIDTH;
 		wolf_mlx->map_data = av[1];
 		error_checking(wolf_mlx);
 	}
-	write (1, "ERROR : Too Many Args",21);
+	ft_putstr("\x1b[31m" "ERROR : Too many arguments\n");
 	return (0);
 }

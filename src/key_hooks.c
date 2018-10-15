@@ -6,7 +6,7 @@
 /*   By: kmayika <kmayika@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/08/30 13:57:42 by kmayika           #+#    #+#             */
-/*   Updated: 2018/08/30 14:19:07 by kmayika          ###   ########.fr       */
+/*   Updated: 2018/09/11 10:30:54 by kmayika          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,12 +14,11 @@
 
 int		exit_prog(void)
 {
-	exit(0);
+	exit(1);
 }
 
 int		hooks(int keycode, t_wolf *wolf_mlx)
 {
-	wolf_mlx->rot_speed = 0.1;
 	if (keycode == 53)
 		exit_prog();
 	else if (keycode == 126)

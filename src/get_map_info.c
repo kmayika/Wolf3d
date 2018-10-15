@@ -6,13 +6,13 @@
 /*   By: kmayika <kmayika@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/08/30 13:57:58 by kmayika           #+#    #+#             */
-/*   Updated: 2018/08/30 14:09:40 by kmayika          ###   ########.fr       */
+/*   Updated: 2018/09/11 10:42:55 by kmayika          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/wolf3d.h"
 
-void	ft_split(char *str, t_wolf *mlx, int y)
+void	ft_split(char *str, t_wolf *wolf_mlx, int y)
 {
 	int		x;
 	int		i;
@@ -23,9 +23,10 @@ void	ft_split(char *str, t_wolf *mlx, int y)
 	line_tab = ft_strsplit(str, ' ');
 	while (line_tab[x] != NULL)
 		x++;
+	wolf_mlx->max_x = x;
 	while (i < x)
 	{
-		mlx->map[y][i] = ft_atoi(line_tab[i]);
+		wolf_mlx->map[y][i] = ft_atoi(line_tab[i]);
 		i++;
 	}
 	while (x >= 1)
@@ -41,11 +42,20 @@ void	get_map(t_wolf *mlx, char *str)
 
 	y = 0;
 	fd = open(str, O_RDONLY);
-	while (get_next_line(fd, &temp_line) > 0)
+	if (fd >= 0)
 	{
-		ft_split(temp_line, mlx, y);
-		y++;
-		ft_strdel(&temp_line);
+		while (get_next_line(fd, &temp_line) > 0)
+		{
+			ft_split(temp_line, mlx, y);
+			y++;
+			ft_strdel(&temp_line);
+		}
+		close(fd);
+		mlx->max_y = y;
 	}
-	close(fd);
+	else
+	{
+		ft_putstr("\x1b[31m" "ERROR : Map not found\n");
+		exit(1);
+	}
 }

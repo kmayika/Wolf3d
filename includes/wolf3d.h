@@ -6,14 +6,13 @@
 /*   By: kmayika <kmayika@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/08/23 21:50:23 by kmayika           #+#    #+#             */
-/*   Updated: 2018/09/03 11:41:07 by kmayika          ###   ########.fr       */
+/*   Updated: 2018/09/11 10:30:16 by kmayika          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef WOLF3D_H
 # define WOLF3D_H
-//# include <mlx.h>
-#include "/Users/kwezimayikana/Desktop/minilibx/mlx.h"
+# include <mlx.h>
 # include <math.h>
 # include <stdlib.h>
 # include <fcntl.h>
@@ -57,10 +56,7 @@ typedef	struct		s_wolf
 	double			plane_x;
 	double			plane_y;
 	double			old_plane_x;
-	double			rot_speed;
 	int				map[4096][4096];
-	int				max_x;
-	int				max_y;
 	int				x;
 	int				y;
 	int				color;
@@ -73,6 +69,8 @@ typedef	struct		s_wolf
 	int				i;
 	int				j;
 	int				k;
+	int				max_x;
+	int				max_y;
 	int				image_width;
 	int				image_height;
 	int				*image_data;
@@ -98,4 +96,8 @@ void				ft_split(char *str, t_wolf *mlx, int y);
 void				put_floor(t_wolf *wolf_mlx, int x);
 void				put_menu(t_wolf *wolf_mlx);
 void				error_checking(t_wolf *wolf_mlx);
+void				map_border_err(t_wolf *wolf_mlx);
+void				left_border_check(t_wolf *wolf_mlx);
+void				top_border_check(t_wolf *wolf_mlx);
+void				bottom_border_check(t_wolf *wolf_mlx);
 #endif

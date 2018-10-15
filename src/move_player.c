@@ -6,7 +6,7 @@
 /*   By: kmayika <kmayika@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/08/30 13:59:09 by kmayika           #+#    #+#             */
-/*   Updated: 2018/08/30 14:36:46 by kmayika          ###   ########.fr       */
+/*   Updated: 2018/09/11 10:30:33 by kmayika          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,34 +36,34 @@ void	mv_rhs(t_wolf *wolf_mlx)
 {
 	wolf_mlx->old_dir_x = wolf_mlx->dir_x;
 	wolf_mlx->dir_x = wolf_mlx->dir_x *
-	cos(wolf_mlx->rot_speed) - wolf_mlx->dir_y *
-	sin(wolf_mlx->rot_speed);
+	cos(0.1) - wolf_mlx->dir_y *
+	sin(0.1);
 	wolf_mlx->dir_y = wolf_mlx->old_dir_x *
-	sin(wolf_mlx->rot_speed) + wolf_mlx->dir_y *
-	cos(wolf_mlx->rot_speed);
+	sin(0.1) + wolf_mlx->dir_y *
+	cos(0.1);
 	wolf_mlx->old_plane_x = wolf_mlx->plane_x;
 	wolf_mlx->plane_x = wolf_mlx->plane_x *
-	cos(wolf_mlx->rot_speed) - wolf_mlx->plane_y *
-	sin(wolf_mlx->rot_speed);
+	cos(0.1) - wolf_mlx->plane_y *
+	sin(0.1);
 	wolf_mlx->plane_y = wolf_mlx->old_plane_x *
-	sin(wolf_mlx->rot_speed) + wolf_mlx->plane_y *
-	cos(wolf_mlx->rot_speed);
+	sin(0.1) + wolf_mlx->plane_y *
+	cos(0.1);
 }
 
 void	mv_lhs(t_wolf *wolf_mlx)
 {
 	wolf_mlx->old_dir_x = wolf_mlx->dir_x;
 	wolf_mlx->dir_x = wolf_mlx->dir_x *
-	cos(-wolf_mlx->rot_speed) - wolf_mlx->dir_y *
-	sin(-wolf_mlx->rot_speed);
+	cos(-0.1) - wolf_mlx->dir_y *
+	sin(-0.1);
 	wolf_mlx->dir_y = wolf_mlx->old_dir_x *
-	sin(-wolf_mlx->rot_speed) + wolf_mlx->dir_y *
-	cos(-wolf_mlx->rot_speed);
+	sin(-0.1) + wolf_mlx->dir_y *
+	cos(-0.1);
 	wolf_mlx->old_plane_x = wolf_mlx->plane_x;
 	wolf_mlx->plane_x = wolf_mlx->plane_x *
-	cos(-wolf_mlx->rot_speed) - wolf_mlx->plane_y *
-	sin(-wolf_mlx->rot_speed);
+	cos(-0.1) - wolf_mlx->plane_y *
+	sin(-0.1);
 	wolf_mlx->plane_y = wolf_mlx->old_plane_x *
-	sin(-wolf_mlx->rot_speed) + wolf_mlx->plane_y *
-	cos(-wolf_mlx->rot_speed);
+	sin(-0.1) + wolf_mlx->plane_y *
+	cos(-0.1);
 }

@@ -6,7 +6,7 @@
 /*   By: kmayika <kmayika@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/08/30 13:58:12 by kmayika           #+#    #+#             */
-/*   Updated: 2018/09/03 14:13:44 by kmayika          ###   ########.fr       */
+/*   Updated: 2018/09/07 01:36:16 by kmayika          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,7 +60,6 @@ void	render(t_wolf *wolf_mlx)
 		wolf_mlx->hit = 0;
 		get_dir(wolf_mlx);
 		wall_hit(wolf_mlx);
-		draw_line(wolf_mlx);
 		wolf_mlx->x++;
 	}
 	mlx_put_image_to_window(wolf_mlx->mlx, wolf_mlx->win,
